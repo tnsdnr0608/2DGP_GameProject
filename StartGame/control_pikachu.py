@@ -34,6 +34,28 @@ class Cloud():
         self.image.draw(self.x, self.y)
 
 
+class Pikachu:
+    def __init__(self):
+        self.x, self.y = 40, 120
+        self.frame = 0
+        self.direction = 1
+        self.image = load_image('walk_animation.png')
+
+    def update(self):
+        self.frame = (self.frame + 1) % 5
+        self.x += 5 * self.direction
+
+        if self.x <= 40:
+            self.direction = 1
+
+        elif self.x >= 350:
+            self.direction = 0
+
+
+    def draw(self):
+        self.image.clip_draw(self.frame * 110, 0, 110, 110, self.x, self.y)
+
+
 def handle_events():
     global running
     events = get_events()
@@ -49,6 +71,7 @@ def reset_world():
     global world
     global p_map
     global cloud
+    global pikachu
 
     running = True
     world = []
@@ -59,6 +82,8 @@ def reset_world():
     cloud = [Cloud() for i in range(10)]
     world += cloud
 
+    pikachu = Pikachu()
+    world.append(pikachu)
 
 def update_world():
     for o in world:
