@@ -1,5 +1,5 @@
 from pico2d import *
-
+import random
 
 class P_Map:
     def __init__(self):
@@ -10,6 +10,28 @@ class P_Map:
 
     def update(self):
         pass
+
+
+class Cloud():
+    def __init__(self):
+        self.x, self.y = random.randint(100, 750), random.randint(300, 600)
+        self.frame = random.randint(0, 1)
+        self.speed = random.randint(1, 3)
+        self.image = load_image('cloud.png')
+        self.direction = 2
+
+    def update(self):
+        self.frame = (self.frame + 1) % 1
+        self.x += self.speed * self.direction
+
+        if self.x >= 750:
+            self.direction = -1
+
+        if self.x <= 50:
+            self.direction = 1
+
+    def draw(self):
+        self.image.draw(self.x, self.y)
 
 
 def handle_events():
@@ -26,11 +48,16 @@ def reset_world():
     global running
     global world
     global p_map
+    global cloud
+
     running = True
     world = []
 
     p_map = P_Map()
     world.append(p_map)
+
+    cloud = [Cloud() for i in range(10)]
+    world += cloud
 
 
 def update_world():
