@@ -75,6 +75,25 @@ class Pikachu_Right:
         self.image.clip_draw(int(self.frame) * 113, 0, 110, 113, self.x, self.y)
 
 
+class Ball():
+    def __init__(self):
+        self.x, self.y = 400, 570
+        self.frame = 0
+        self.speed = 5
+        self.image = load_image('ball.png')
+
+    def update(self):
+        self.frame = (self.frame + 1) % 1
+        self.y -= self.speed * 0.5
+
+        if self.y <= 90:
+            self.y = 90
+
+    def draw(self):
+        self.image.clip_draw(int(self.frame) * 45, 0, 45, 45, self.x, self.y, 70, 70)
+
+
+
 def handle_events():
     global running
     global pikachu
@@ -111,6 +130,7 @@ def reset_world():
     global cloud
     global pikachu
     global pikachu_right
+    global ball
 
     running = True
     world = []
@@ -126,6 +146,9 @@ def reset_world():
 
     pikachu_right = Pikachu_Right()
     world.append(pikachu_right)
+
+    ball = Ball()
+    world.append(ball)
 
 def update_world():
     for o in world:
