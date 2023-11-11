@@ -164,7 +164,7 @@ def handle_events():
                 pikachu.direction += 1
             elif event.key == SDLK_d: # 왼쪽 방향
                 pikachu.direction -= 1
-            elif event.key == SDLK_r:  # Jump when the space key is pressed
+            elif event.key == SDLK_r:
                 pikachu.jump()
             elif event.key == SDLK_UP:
                 pikachu_right.jump2()
@@ -181,6 +181,7 @@ def handle_events():
                 pikachu_right.direction -= 1
             elif event.key == SDLK_LEFT:
                 pikachu_right.direction += 1
+
 
 def reset_world():
     global running
