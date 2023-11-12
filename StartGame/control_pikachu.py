@@ -124,26 +124,39 @@ class Pikachu_Right:
 
 class Ball():
     def __init__(self):
-        self.x, self.y = 400, 570
+        self.x, self.y = 350, 90
         self.frame = 0
         self.speed = 5
+        self.gravity = 0.5
+        self.is_collided = False
         self.image = load_image('ball.png')
 
     def check_collision(self, target):
-        if{
-            self.x - 35 < target.x + 55 and
-            self.x + 35 > target.x - 55 and
-            self.y - 35 < target.y + 55 and
-            self.y + 35 > target.y - 55
+        if {
+            # self.x - 35 < target.x + 55 and
+            # self.x + 35 > target.x - 55 and
+            # self.y - 35 < target.y + 55 and
+            # self.y + 35 > target.y - 55
+            self.x - 35 < pikachu.x + 55 and
+            self.x + 35 > pikachu.x - 55 and
+            self.y - 35 < pikachu.y + 55 and
+            self.y + 35 > pikachu.y - 55 # 피카츄의 움직임에 따라 움직임
         }:
-            return True
+            self.y = pikachu.y + 55 + 35
+            self.speed = 0
+            # self.is_collided = True
+            # return True
 
     def update(self):
         self.frame = (self.frame + 1) % 1
-        self.y -= self.speed * 0.5
 
-        if self.y <= 90:
-            self.y = 90
+        if not self.is_collided:
+            self.speed += self.gravity
+            self.y -= self.speed
+
+            if self.y <= 90:
+                self.y = 90
+                self.speed = 0
 
     def draw(self):
         self.image.clip_draw(int(self.frame) * 45, 0, 45, 45, self.x, self.y, 70, 70)
@@ -210,18 +223,24 @@ def reset_world():
     ball = Ball()
     world.append(ball)
 
+
 def update_world():
     for o in world:
         o.update()
 
     if ball.check_collision(pikachu):
         # Handle collision with Pikachu (e.g., reset the ball's position)
-        ball.y = 570
+        # ball.y = 570
+        ball.is_collided = True
+        ball.y = pikachu.y + 55 + 35
+        ball.speed = 0
+
 
         # Check for collision with Pikachu_Right
     if ball.check_collision(pikachu_right):
         # Handle collision with Pikachu_Right (e.g., reset the ball's position)
-        ball.y = 570
+        ball.is_collided = False
+        ball.y = 90
 
 
 def render_world():
