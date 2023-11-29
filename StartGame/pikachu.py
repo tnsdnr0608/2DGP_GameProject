@@ -59,7 +59,7 @@ class Run:
     @staticmethod
     def enter(pikachu, e):
         if right_down(e) or left_up(e):  # 오른쪽으로 RUN
-            pikachu.dir, pikachu.action, pikachu.face_dir = 1, 2, 1
+            pikachu.dir, pikachu.action, pikachu.face_dir = 1, 1, 1
         elif left_down(e) or right_up(e):  # 왼쪽으로 RUN
             pikachu.dir, pikachu.action, pikachu.face_dir = -1, 0, -1
 
