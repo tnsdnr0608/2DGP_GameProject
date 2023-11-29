@@ -79,6 +79,26 @@ class Run:
         pikachu.image.clip_draw(int(pikachu.frame) * 110, pikachu.action * 98, 110, 98, pikachu.x, pikachu.y)
 
 
+class Jump:
+    @staticmethod
+    def enter(pikachu, e):
+        pass
+
+    @staticmethod
+    def exit(pikachu, e):
+        if space_down(e):
+            pikachu.slide()
+        pass
+
+    @staticmethod
+    def do(pikachu):
+        pass
+
+    @staticmethod
+    def draw(pikachu):
+        pass
+
+
 class StateMachine:
     def __init__(self, pikachu):
         self.pikachu = pikachu
