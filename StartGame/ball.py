@@ -48,6 +48,6 @@ class Ball:
         if self.x <= 50:
             self.x = 50
             self.ball_dx = 1
-        if self.x >= 550:
-            self.x = 550
+        if self.x >= 800:
+            self.x = 800
             self.ball_dx = -1
