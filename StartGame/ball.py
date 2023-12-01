@@ -21,8 +21,8 @@ class Ball:
             Ball.image = load_image('ball.png')
         self.x, self.y, self.velocity = x, y, velocity
         self.frame = 0
-        self.ball_x = 0
-        self.ball_y = -1
+        self.ball_dx = 0
+        self.ball_dy = -1
 
     def get_bb(self):
         return self.x - 50, self.y - 45, self.x + 50, self.y + 45
@@ -36,6 +36,18 @@ class Ball:
         # self.y -= self.velocity
         # if self.y == 120:
         #     self.velocity = 0
-        self.x += self.ball_x * RUN_SPEED_PPS * game_framework.frame_time
-        self.y += self.ball_y * RUN_SPEED_PPS * game_framework.frame_time
+        self.x += self.ball_dx * RUN_SPEED_PPS * game_framework.frame_time
+        self.y += self.ball_dy * RUN_SPEED_PPS * game_framework.frame_time
 
+        if self.y <= 120:
+            self.y = 120
+            self.ball_dy = 1
+        if self.y >= 550:
+            self.y = 550
+            self.ball_dy = -1
+        if self.x <= 50:
+            self.x = 50
+            self.ball_dx = 1
+        if self.x >= 550:
+            self.x = 550
+            self.ball_dx = -1
