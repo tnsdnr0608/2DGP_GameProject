@@ -31,6 +31,7 @@ class Ball:
         draw_rectangle(*self.get_bb())
 
     def update(self):
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
         self.y -= self.velocity
         if self.y == 120:
             self.velocity = 0
