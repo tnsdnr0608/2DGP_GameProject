@@ -38,7 +38,7 @@ def init():
     game_world.add_object(cloud, 0)
 
     ball = Ball()
-    game_world.add_object(ball, 0)
+    game_world.add_object(ball, 1)
 
     pikachu = Pikachu()
     game_world.add_object(pikachu, 1)
