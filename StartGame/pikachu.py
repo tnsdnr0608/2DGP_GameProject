@@ -14,6 +14,18 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 5
 
+# 점프 액션
+JUMP_PIXEL_PER_METER = (10.0 / 0.3)
+JUMP_SPEED_KMPH = 20.0
+JUMP_SPEED_MPM = (JUMP_SPEED_KMPH * 500.0 / 60.0)
+JUMP_SPEED_MPS = (JUMP_SPEED_MPM / 60.0)
+JUMP_SPEED_PPS = (JUMP_SPEED_MPS * JUMP_PIXEL_PER_METER)
+
+JUMP_TIME_PER_ACTION = 2
+JUMP_ACTION_PER_TIME = 1.0 / JUMP_TIME_PER_ACTION
+JUMP_FRAMES_PER_ACTION = 4
+
+
 def right_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_g
 
@@ -40,6 +52,10 @@ def jump_up(e):
 
 def jump_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_r
+
+
+def null(e):
+    return e[0] == 'NO'
 
 
 class Idle:
@@ -97,7 +113,9 @@ class Run:
 class Jump:
     @staticmethod
     def enter(pikachu, e):
-        pass
+        if jump_up(e):
+            pikachu.is_jump = 1
+
 
     @staticmethod
     def exit(pikachu, e):
@@ -107,11 +125,26 @@ class Jump:
 
     @staticmethod
     def do(pikachu):
-        pass
+        # pikachu.frame = (pikachu.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
+        pikachu.frame = (pikachu.frame + JUMP_FRAMES_PER_ACTION * JUMP_ACTION_PER_TIME * game_framework.frame_time) % 4
+
+        pikachu.y += pikachu.is_jump
+
+        if pikachu.y >= pikachu.jump_height:
+            pikachu.is_jump = -1
+
+        if pikachu.y <= pikachu.filed:
+            pikachu.is_jump = 0
+            pikachu.state_machine.handle_event(('NO', 0))
+
+
 
     @staticmethod
     def draw(pikachu):
-        pass
+        if pikachu.face_dir == 1:
+            pikachu.jumping_image.clip_draw(int(pikachu.frame) * 112, 0, 112, 117, pikachu.x, pikachu.y)
+        elif pikachu.face_dir == -1:
+            pikachu.jumping_image.clip_composite_draw(int(pikachu.frame) * 112, 0, 112, 117, 0, 'h', pikachu.x, pikachu.y, 110, 110)
 
 
 class StateMachine:
@@ -119,8 +152,9 @@ class StateMachine:
         self.pikachu = pikachu
         self.cur_state = Idle
         self.transitions = {
-            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Idle, jump_down: Jump},
+            Idle: {right_down: Run, left_down: Run, left_up: Idle, right_up: Idle, space_down: Idle, jump_down: Jump},
             Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Run, jump_up: Jump},
+            Jump: {null: Idle, right_down: Jump, left_down: Jump, jump_down: Jump}
         }
 
     def start(self):
@@ -150,7 +184,11 @@ class Pikachu:
         self.action = 3
         self.face_dir = 1
         self.dir = 0
+        self.is_jump = 1
+        self.jump_height = 350
+        self.filed = 120
         self.image = load_image('walk_sheet.png')
+        self.jumping_image = load_image('jump.png')
         # self.font = load_image('ENCR10B.TTF', 16)
         self.state_machine = StateMachine(self)
         self.state_machine.start()
