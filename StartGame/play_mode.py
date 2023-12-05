@@ -5,6 +5,7 @@ from ground import Ground
 from pikachu import Pikachu
 from cloud import Cloud
 from ball import Ball
+from pado import Pado
 
 
 # Game object class here
@@ -30,6 +31,7 @@ def init():
     global pikachu
     global cloud
     global ball
+    global pado
 
     ground = Ground()
     game_world.add_object(ground, 0)
@@ -37,6 +39,10 @@ def init():
     for i in range(10):
         cloud = Cloud()
         game_world.add_object(cloud, 1)
+
+    for i in range(400):
+        pado = Pado()
+        game_world.add_object(pado, 1)
 
     ball = Ball()
     game_world.add_object(ball, 1)
