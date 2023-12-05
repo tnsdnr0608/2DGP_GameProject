@@ -25,6 +25,17 @@ JUMP_TIME_PER_ACTION = 2
 JUMP_ACTION_PER_TIME = 1.0 / JUMP_TIME_PER_ACTION
 JUMP_FRAMES_PER_ACTION = 4
 
+# 슬라이드 액션
+SLIDE_PIXEL_PER_METER = (10.0 / 0.3)
+SLIDE_SPEED_KMPH = 20.0
+SLIDE_SPEED_MPM = (SLIDE_SPEED_KMPH * 500.0 / 60.0)
+SLIDE_SPEED_MPS = (SLIDE_SPEED_MPM / 60.0)
+SLIDE_SPEED_PPS = (SLIDE_SPEED_MPS * SLIDE_PIXEL_PER_METER)
+
+SLIDE_TIME_PER_ACTION = 2
+SLIDE_ACTION_PER_TIME = 1.0 / SLIDE_TIME_PER_ACTION
+SLIDE_FRAMES_PER_ACTION = 3
+
 
 def right_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_g
@@ -70,8 +81,8 @@ class Idle:
 
     @staticmethod
     def exit(pikachu, e):
-        if space_down(e):
-            pikachu.slide()
+        # if space_down(e):
+        #     pikachu.slide()
         pass
 
     @staticmethod
@@ -94,8 +105,8 @@ class Run:
 
     @staticmethod
     def exit(pikachu, e):
-        if space_down(e):
-            pikachu.slide()
+        # if space_down(e):
+        #     pikachu.slide()
         pass
 
     @staticmethod
@@ -119,8 +130,8 @@ class Jump:
 
     @staticmethod
     def exit(pikachu, e):
-        if space_down(e):
-            pikachu.slide()
+        # if space_down(e):
+        #     pikachu.slide()
         pass
 
     @staticmethod
@@ -137,8 +148,6 @@ class Jump:
             pikachu.is_jump = 0
             pikachu.state_machine.handle_event(('NO', 0))
 
-
-
     @staticmethod
     def draw(pikachu):
         if pikachu.face_dir == 1:
@@ -147,14 +156,51 @@ class Jump:
             pikachu.jumping_image.clip_composite_draw(int(pikachu.frame) * 112, 0, 112, 117, 0, 'h', pikachu.x, pikachu.y, 110, 110)
 
 
+class Slide:
+    @staticmethod
+    def enter(pikachu, e):
+        if space_down(e):
+            pikachu.is_slide = 1
+
+    @staticmethod
+    def exit(pikachu, e):
+        if space_down(e):
+            pikachu.slide()
+        pass
+
+    @staticmethod
+    def do(pikachu):
+        # pikachu.frame = (pikachu.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
+        pikachu.frame = (pikachu.frame + SLIDE_FRAMES_PER_ACTION * SLIDE_ACTION_PER_TIME * game_framework.frame_time) % 3
+
+        pikachu.x += pikachu.is_slide
+
+        if pikachu.x >= pikachu.slide_distance:
+            pikachu.is_slide = -1
+
+        if pikachu.x <= pikachu.filed:
+            pikachu.is_slide = 0
+            pikachu.state_machine.handle_event(('NO', 0))
+
+    @staticmethod
+    def draw(pikachu):
+        if pikachu.face_dir == 1:
+            pikachu.sliding_image.clip_draw(int(pikachu.frame) * 88, 0, 88, 98, pikachu.x, pikachu.y, 110, 110)
+        elif pikachu.face_dir == -1:
+            pikachu.sliding_image.clip_composite_draw(int(pikachu.frame) * 88, 0, 88, 98, 0, 'h', pikachu.x,
+                                                      pikachu.y, 110, 110)
+
+
 class StateMachine:
     def __init__(self, pikachu):
         self.pikachu = pikachu
         self.cur_state = Idle
         self.transitions = {
             Idle: {right_down: Run, left_down: Run, left_up: Idle, right_up: Idle, space_down: Idle, jump_down: Jump},
-            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Run, jump_up: Jump},
-            Jump: {null: Idle, right_down: Jump, left_down: Jump, jump_down: Jump}
+            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Slide, jump_up: Jump},
+            Jump: {null: Idle, right_down: Jump, left_down: Jump, jump_down: Jump, space_down: Jump},
+            Slide: {null: Idle}
+
         }
 
     def start(self):
@@ -187,8 +233,11 @@ class Pikachu:
         self.is_jump = 1
         self.jump_height = 350
         self.filed = 120
+        self.is_slide = 1
+        self.slide_distance = 120
         self.image = load_image('walk_sheet.png')
         self.jumping_image = load_image('jump.png')
+        self.sliding_image = load_image('slide.png')
         # self.font = load_image('ENCR10B.TTF', 16)
         self.state_machine = StateMachine(self)
         self.state_machine.start()
@@ -211,4 +260,3 @@ class Pikachu:
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
-
