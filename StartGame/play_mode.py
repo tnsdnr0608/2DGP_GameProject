@@ -54,9 +54,13 @@ def init():
 def update():
     game_world.update()
     if game_world.collide(pikachu, ball):
-        print('COLLISION pikachu:ball')
-        ball.ball_dx = -1
-        ball.ball_dy = 1
+        if pikachu.is_spike:
+            ball.ball_dx = pikachu.dir
+            ball.ball_dy = -2
+        else:
+            print('COLLISION pikachu:ball')
+            ball.ball_dx = -1
+            ball.ball_dy = 1
 
 
 def draw():

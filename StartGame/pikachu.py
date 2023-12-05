@@ -1,4 +1,4 @@
-from pico2d import load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_g, SDLK_d, SDLK_r, SDLK_SPACE, draw_rectangle
+from pico2d import load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_g, SDLK_d, SDLK_r, SDLK_SPACE, SDLK_f,draw_rectangle
 
 import game_framework
 from ball import Ball
@@ -21,8 +21,8 @@ JUMP_SPEED_MPM = (JUMP_SPEED_KMPH * 500.0 / 60.0)
 JUMP_SPEED_MPS = (JUMP_SPEED_MPM / 60.0)
 JUMP_SPEED_PPS = (JUMP_SPEED_MPS * JUMP_PIXEL_PER_METER)
 
-JUMP_TIME_PER_ACTION = 2
-JUMP_ACTION_PER_TIME = 1.0 / JUMP_TIME_PER_ACTION
+JUMP_TIME_PER_ACTION = 200
+JUMP_ACTION_PER_TIME = 200.0 / JUMP_TIME_PER_ACTION
 JUMP_FRAMES_PER_ACTION = 4
 
 # 슬라이드 액션
@@ -32,9 +32,20 @@ SLIDE_SPEED_MPM = (SLIDE_SPEED_KMPH * 500.0 / 60.0)
 SLIDE_SPEED_MPS = (SLIDE_SPEED_MPM / 60.0)
 SLIDE_SPEED_PPS = (SLIDE_SPEED_MPS * SLIDE_PIXEL_PER_METER)
 
-SLIDE_TIME_PER_ACTION = 2
-SLIDE_ACTION_PER_TIME = 1.0 / SLIDE_TIME_PER_ACTION
+SLIDE_TIME_PER_ACTION = 20
+SLIDE_ACTION_PER_TIME = 20.0 / SLIDE_TIME_PER_ACTION
 SLIDE_FRAMES_PER_ACTION = 3
+
+# 스파이크 액션
+SPIKE_PIXEL_PER_METER = (10.0 / 0.3)
+SPIKE_SPEED_KMPH = 20.0
+SPIKE_SPEED_MPM = (SPIKE_SPEED_KMPH * 500.0 / 60.0)
+SPIKE_SPEED_MPS = (SPIKE_SPEED_MPM / 60.0)
+SPIKE_SPEED_PPS = (SPIKE_SPEED_MPS * SPIKE_PIXEL_PER_METER)
+
+SPIKE_TIME_PER_ACTION = 20
+SPIKE_ACTION_PER_TIME = 20.0 / SPIKE_TIME_PER_ACTION
+SPIKE_FRAMES_PER_ACTION = 3
 
 
 def right_down(e):
@@ -63,6 +74,14 @@ def jump_up(e):
 
 def jump_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_r
+
+
+def spike_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_f
+
+
+def spike_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_f
 
 
 def null(e):
@@ -127,7 +146,6 @@ class Jump:
         if jump_up(e):
             pikachu.is_jump = 1
 
-
     @staticmethod
     def exit(pikachu, e):
         # if space_down(e):
@@ -173,13 +191,12 @@ class Slide:
         # pikachu.frame = (pikachu.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
         pikachu.frame = (pikachu.frame + SLIDE_FRAMES_PER_ACTION * SLIDE_ACTION_PER_TIME * game_framework.frame_time) % 3
 
-        pikachu.x += pikachu.is_slide
+        pikachu.x += pikachu.dir
 
-        if pikachu.x >= pikachu.slide_distance:
-            pikachu.is_slide = -1
+        if pikachu.x >= pikachu.is_slide:
+            pikachu.dir = -1
 
-        if pikachu.x <= pikachu.filed:
-            pikachu.is_slide = 0
+        if pikachu.x <= pikachu.slide_distance:
             pikachu.state_machine.handle_event(('NO', 0))
 
     @staticmethod
@@ -191,15 +208,52 @@ class Slide:
                                                       pikachu.y, 110, 110)
 
 
+class Spike:
+    @staticmethod
+    def enter(pikachu, e):
+        if spike_down(e):
+            pikachu.is_spike = True
+
+    @staticmethod
+    def exit(pikachu, e):
+        # if space_down(e):
+        #     pikachu.slide()
+        if spike_up(e):
+            pikachu.is_spike = False
+            pikachu.is_jump = -1
+        pass
+
+    @staticmethod
+    def do(pikachu):
+        pikachu.frame = (pikachu.frame + SPIKE_FRAMES_PER_ACTION * SPIKE_ACTION_PER_TIME * game_framework.frame_time) % 5
+        # pikachu.frame = (pikachu.frame + 1) % 5
+
+        if pikachu.is_spike == False:
+            pikachu.is_jump = 0
+
+        # if pikachu.y <= pikachu.filed:
+        #     pikachu.is_jump = 0
+        #     pikachu.state_machine.handle_event(('NO', 0))
+
+    @staticmethod
+    def draw(pikachu):
+        if pikachu.face_dir == 1:
+            pikachu.spike_image.clip_draw(int(pikachu.frame) * 108, 0, 108, 98, pikachu.x, pikachu.y)
+
+
 class StateMachine:
     def __init__(self, pikachu):
         self.pikachu = pikachu
         self.cur_state = Idle
         self.transitions = {
-            Idle: {right_down: Run, left_down: Run, left_up: Idle, right_up: Idle, space_down: Idle, jump_down: Jump},
-            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Slide, jump_up: Jump},
-            Jump: {null: Idle, right_down: Jump, left_down: Jump, jump_down: Jump, space_down: Jump},
-            Slide: {null: Idle}
+            Idle: {right_down: Run, left_down: Run, left_up: Idle, right_up: Idle, space_down: Idle, jump_down: Jump,
+                   spike_down: Spike},
+            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Slide, jump_up: Jump,
+                  spike_down: Spike},
+            Jump: {null: Idle, right_down: Jump, left_down: Jump, jump_down: Jump, space_down: Jump,  spike_down: Spike
+            , spike_up: Idle},
+            Slide: {null: Idle},
+            Spike: {null: Idle},
 
         }
 
@@ -233,11 +287,13 @@ class Pikachu:
         self.is_jump = 1
         self.jump_height = 350
         self.filed = 120
-        self.is_slide = 1
-        self.slide_distance = 120
+        self.is_slide = 0
+        self.slide_distance = 140
+        self.is_spike = False
         self.image = load_image('walk_sheet.png')
         self.jumping_image = load_image('jump.png')
         self.sliding_image = load_image('slide.png')
+        self.spike_image = load_image('spike.png')
         # self.font = load_image('ENCR10B.TTF', 16)
         self.state_machine = StateMachine(self)
         self.state_machine.start()
