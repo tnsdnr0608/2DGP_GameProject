@@ -63,6 +63,8 @@ def update():
             ball.ball_dx = -1
             ball.ball_dy = 1
 
+    if game_world.collide(ball, ground):
+        ball.ball_dx = -1 * ball.ball_dx
 
 def draw():
     clear_canvas()
