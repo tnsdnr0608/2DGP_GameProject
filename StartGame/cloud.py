@@ -21,4 +21,4 @@ class Cloud:
             self.direction = 1
 
     def draw(self):
-        self.image.draw(self.x, self.y)
+        self.image.draw(self.x, self.y, 50, 50)
