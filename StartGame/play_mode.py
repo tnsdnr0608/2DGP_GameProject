@@ -7,6 +7,7 @@ from cloud import Cloud
 from ball import Ball
 from pado import Pado
 from pikachu2 import Pikachu2
+from score import Score
 
 
 # Game object class here
@@ -35,6 +36,7 @@ def init():
     global ball
     global pado
     global pikachu2
+    global score
 
     ground = Ground()
     game_world.add_object(ground, 0)
@@ -55,6 +57,9 @@ def init():
 
     pikachu2 = Pikachu2()
     game_world.add_object(pikachu2, 2)
+
+    score = Score(ball)
+    game_world.add_object(score, 1)
 
 
 def update():

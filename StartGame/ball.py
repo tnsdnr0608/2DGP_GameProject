@@ -1,10 +1,11 @@
 from pico2d import *
 import game_world
 import game_framework
+from StartGame import ground
 
 PIXEL_PER_METER = (10.0 / 0.3)
 RUN_SPEED_KMPH = 20.0
-RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1200.0 / 60.0)
+RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1500.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
@@ -25,10 +26,10 @@ class Ball:
         self.ball_dy = -1
 
     def get_bb(self):
-        return self.x - 50, self.y - 45, self.x + 50, self.y + 45
+        return self.x - 40, self.y - 35, self.x + 40, self.y + 35
 
     def draw(self):
-        self.image.clip_draw(int(self.frame) * 42, 0, 42, 45, self.x, self.y, 100, 100)
+        self.image.clip_draw(int(self.frame) * 42, 0, 42, 45, self.x, self.y, 80, 80)
         draw_rectangle(*self.get_bb())
 
     def update(self):

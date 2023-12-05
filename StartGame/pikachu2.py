@@ -1,4 +1,4 @@
-from pico2d import load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_RIGHT, SDLK_LEFT, SDLK_UP, SDLK_KP_ENTER, SDLK_DOWN, draw_rectangle
+from pico2d import load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_RIGHT, SDLK_LEFT, SDLK_UP, SDLK_BACKSPACE, SDLK_DOWN, draw_rectangle
 
 import game_framework
 from ball import Ball
@@ -65,7 +65,7 @@ def left_up(e):
 
 
 def space_down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_KP_ENTER
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_BACKSPACE
 
 
 def jump_up(e):
@@ -119,7 +119,7 @@ class Idle:
 
     @staticmethod
     def draw(pikachu2):
-        pikachu2.image.clip_draw(int(pikachu2.frame) * 110, pikachu2.action * 98, 110, 98, pikachu2.x, pikachu2.y, 110, 110)
+        pikachu2.image.clip_draw(int(pikachu2.frame) * 110, pikachu2.action * 98, 110, 98, pikachu2.x, pikachu2.y, 110, 100)
 
 
 class Run:
@@ -186,7 +186,7 @@ class Slide:
     @staticmethod
     def enter(pikachu2, e):
         if space_down(e):
-            pikachu2.is_slide = 1
+            pikachu2.is_slide = -1
 
     @staticmethod
     def exit(pikachu2, e):
@@ -202,7 +202,7 @@ class Slide:
         pikachu2.x += pikachu2.dir
 
         if pikachu2.x >= pikachu2.is_slide:
-            pikachu2.dir = -1
+            pikachu2.dir = 1
 
         if pikachu2.x <= pikachu2.slide_distance:
             pikachu2.state_machine.handle_event(('NO', 0))
