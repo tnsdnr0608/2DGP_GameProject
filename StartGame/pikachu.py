@@ -154,6 +154,7 @@ class Jump:
     def enter(pikachu, e):
         if jump_up(e):
             pikachu.is_jump = 1
+            pikachu.idle_sound.play()
 
     @staticmethod
     def exit(pikachu, e):
@@ -188,6 +189,7 @@ class Slide:
     def enter(pikachu, e):
         if space_down(e):
             pikachu.is_jump = 1
+            pikachu.idle_sound.play()
 
     @staticmethod
     def exit(pikachu, e):
@@ -312,10 +314,14 @@ class Pikachu:
         self.state_machine.start()
         self.item = None
         self.spike_sound = None
+        self.idle_sound = None
 
         if not self.spike_sound:
             self.spike_sound = load_wav('spike.wav')
             self.spike_sound.set_volume(32)
+        if not self.idle_sound:
+            self.idle_sound = load_wav('idle.wav')
+            self.idle_sound.set_volume(32)
 
     def get_bb(self):
         return self.x - 50, self.y - 50, self.x + 50, self.y + 50
