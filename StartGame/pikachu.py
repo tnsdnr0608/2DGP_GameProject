@@ -1,4 +1,5 @@
-from pico2d import load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_g, SDLK_d, SDLK_r, SDLK_SPACE, SDLK_f,draw_rectangle
+from pico2d import load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_g, SDLK_d, SDLK_r, SDLK_SPACE, SDLK_f, draw_rectangle, \
+    load_wav
 
 import game_framework
 from ball import Ball
@@ -186,7 +187,7 @@ class Slide:
     @staticmethod
     def enter(pikachu, e):
         if space_down(e):
-            pikachu.is_slide = 1
+            pikachu.is_jump = 1
 
     @staticmethod
     def exit(pikachu, e):
@@ -200,11 +201,12 @@ class Slide:
         pikachu.frame = (pikachu.frame + SLIDE_FRAMES_PER_ACTION * SLIDE_ACTION_PER_TIME * game_framework.frame_time) % 3
 
         pikachu.x += pikachu.dir
+        pikachu.y += pikachu.is_jump
 
-        if pikachu.x >= pikachu.is_slide:
-            pikachu.dir = -1
+        if pikachu.y >= pikachu.slide_distance:
+            pikachu.is_jump = -1
 
-        if pikachu.x <= pikachu.slide_distance:
+        if pikachu.y <= pikachu.filed:
             pikachu.state_machine.handle_event(('NO', 0))
 
     @staticmethod
@@ -221,6 +223,7 @@ class Spike:
     def enter(pikachu, e):
         if spike_down(e):
             pikachu.is_spike = True
+            pikachu.spike_sound.play()
         elif spike_up(e):
             pikachu.is_spike = False
 
@@ -298,7 +301,7 @@ class Pikachu:
         self.jump_height = 350
         self.filed = 120
         self.is_slide = 0
-        self.slide_distance = 140
+        self.slide_distance = 180
         self.is_spike = False
         self.image = load_image('walk_sheet.png')
         self.jumping_image = load_image('jump.png')
@@ -308,6 +311,11 @@ class Pikachu:
         self.state_machine = StateMachine(self)
         self.state_machine.start()
         self.item = None
+        self.spike_sound = None
+
+        if not self.spike_sound:
+            self.spike_sound = load_wav('spike.wav')
+            self.spike_sound.set_volume(32)
 
     def get_bb(self):
         return self.x - 50, self.y - 50, self.x + 50, self.y + 50

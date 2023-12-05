@@ -18,7 +18,7 @@ class Ground:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return 400, 70, 400, 180
+        return 400, 70, 400, 200
 
     def update(self):
         pass
