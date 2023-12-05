@@ -88,6 +88,10 @@ def null(e):
     return e[0] == 'NO'
 
 
+def s_null(e):
+    return e[0] == 'SN'
+
+
 class Idle:
     @staticmethod
     def enter(pikachu, e):
@@ -106,6 +110,10 @@ class Idle:
 
     @staticmethod
     def do(pikachu):
+        if pikachu.is_spike:
+            pikachu.state_machine.handle_event(('SN', 0))
+            pikachu.is_spike = False
+            pikachu.is_jump = True
         # pikachu.frame = (pikachu.frame + 1) % 5
         pass
 
@@ -213,6 +221,8 @@ class Spike:
     def enter(pikachu, e):
         if spike_down(e):
             pikachu.is_spike = True
+        elif spike_up(e):
+            pikachu.is_spike = False
 
     @staticmethod
     def exit(pikachu, e):
@@ -228,17 +238,17 @@ class Spike:
         pikachu.frame = (pikachu.frame + SPIKE_FRAMES_PER_ACTION * SPIKE_ACTION_PER_TIME * game_framework.frame_time) % 5
         # pikachu.frame = (pikachu.frame + 1) % 5
 
-        if pikachu.is_spike == False:
-            pikachu.is_jump = 0
-
-        # if pikachu.y <= pikachu.filed:
-        #     pikachu.is_jump = 0
-        #     pikachu.state_machine.handle_event(('NO', 0))
+        if pikachu.y == pikachu.is_jump:
+            pikachu.state_machine.handle_event(('SN', 0))
+            pikachu.is_jump = -1
 
     @staticmethod
     def draw(pikachu):
         if pikachu.face_dir == 1:
             pikachu.spike_image.clip_draw(int(pikachu.frame) * 108, 0, 108, 98, pikachu.x, pikachu.y)
+        elif pikachu.face_dir == -1:
+            pikachu.spike_image.clip_composite_draw(int(pikachu.frame) * 108, 0, 108, 98, 0, 'h', pikachu.x,
+                                                      pikachu.y, 110, 110)
 
 
 class StateMachine:
@@ -247,13 +257,13 @@ class StateMachine:
         self.cur_state = Idle
         self.transitions = {
             Idle: {right_down: Run, left_down: Run, left_up: Idle, right_up: Idle, space_down: Idle, jump_down: Jump,
-                   spike_down: Spike},
+                   },
             Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Slide, jump_up: Jump,
-                  spike_down: Spike},
+                  },
             Jump: {null: Idle, right_down: Jump, left_down: Jump, jump_down: Jump, space_down: Jump,  spike_down: Spike
-            , spike_up: Idle},
+            , spike_up: Jump},
             Slide: {null: Idle},
-            Spike: {null: Idle},
+            Spike: {s_null: Idle, jump_down: Jump, jump_up: Jump},
 
         }
 

@@ -55,6 +55,7 @@ def update():
     game_world.update()
     if game_world.collide(pikachu, ball):
         if pikachu.is_spike:
+            print('Spike pikachu:ball')
             ball.ball_dx = pikachu.dir
             ball.ball_dy = -2
         else:
