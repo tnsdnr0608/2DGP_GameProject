@@ -16,8 +16,8 @@ FRAMES_PER_ACTION = 5
 
 # 점프 액션
 JUMP_PIXEL_PER_METER = (10.0 / 0.3)
-JUMP_SPEED_KMPH = 20.0
-JUMP_SPEED_MPM = (JUMP_SPEED_KMPH * 500.0 / 60.0)
+JUMP_SPEED_KMPH = 40.0
+JUMP_SPEED_MPM = (JUMP_SPEED_KMPH * 1000.0 / 60.0)
 JUMP_SPEED_MPS = (JUMP_SPEED_MPM / 60.0)
 JUMP_SPEED_PPS = (JUMP_SPEED_MPS * JUMP_PIXEL_PER_METER)
 
@@ -39,12 +39,12 @@ SLIDE_FRAMES_PER_ACTION = 3
 # 스파이크 액션
 SPIKE_PIXEL_PER_METER = (10.0 / 0.3)
 SPIKE_SPEED_KMPH = 20.0
-SPIKE_SPEED_MPM = (SPIKE_SPEED_KMPH * 500.0 / 60.0)
+SPIKE_SPEED_MPM = (SPIKE_SPEED_KMPH * 1000.0 / 60.0)
 SPIKE_SPEED_MPS = (SPIKE_SPEED_MPM / 60.0)
 SPIKE_SPEED_PPS = (SPIKE_SPEED_MPS * SPIKE_PIXEL_PER_METER)
 
-SPIKE_TIME_PER_ACTION = 20
-SPIKE_ACTION_PER_TIME = 20.0 / SPIKE_TIME_PER_ACTION
+SPIKE_TIME_PER_ACTION = 60
+SPIKE_ACTION_PER_TIME = 60.0 / SPIKE_TIME_PER_ACTION
 SPIKE_FRAMES_PER_ACTION = 3
 
 
@@ -165,7 +165,7 @@ class Jump:
         # pikachu.frame = (pikachu.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
         pikachu.frame = (pikachu.frame + JUMP_FRAMES_PER_ACTION * JUMP_ACTION_PER_TIME * game_framework.frame_time) % 4
 
-        pikachu.y += pikachu.is_jump
+        pikachu.y += pikachu.is_jump * JUMP_SPEED_PPS * game_framework.frame_time
 
         if pikachu.y >= pikachu.jump_height:
             pikachu.is_jump = -1
