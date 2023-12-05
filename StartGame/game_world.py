@@ -1,6 +1,6 @@
 # 게임 월드 관리 모듈
 
-objects = [[], []]
+objects = [[], [], []]
 
 collision_pairs = {}
 

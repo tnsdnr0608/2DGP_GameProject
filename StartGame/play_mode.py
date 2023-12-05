@@ -6,6 +6,7 @@ from pikachu import Pikachu
 from cloud import Cloud
 from ball import Ball
 from pado import Pado
+from pikachu2 import Pikachu2
 
 
 # Game object class here
@@ -23,6 +24,7 @@ def handle_events():
             game_framework.change_mode(title)
         else:
             pikachu.handle_event(event)
+            pikachu2.handle_event(event)
 
 
 def init():
@@ -32,6 +34,7 @@ def init():
     global cloud
     global ball
     global pado
+    global pikachu2
 
     ground = Ground()
     game_world.add_object(ground, 0)
@@ -50,6 +53,9 @@ def init():
     pikachu = Pikachu()
     game_world.add_object(pikachu, 1)
 
+    pikachu2 = Pikachu2()
+    game_world.add_object(pikachu2, 2)
+
 
 def update():
     game_world.update()
@@ -63,8 +69,19 @@ def update():
             ball.ball_dx = -1
             ball.ball_dy = 1
 
+    if game_world.collide(pikachu2, ball):
+        if pikachu2.is_spike:
+            print('Spike pikachu2:ball')
+            ball.ball_dx = pikachu2.dir
+            ball.ball_dy = -2
+        else:
+            print('COLLISION pikachu2:ball')
+            ball.ball_dx = -1
+            ball.ball_dy = 1
+
     if game_world.collide(ball, ground):
         ball.ball_dx = -1 * ball.ball_dx
+
 
 def draw():
     clear_canvas()
