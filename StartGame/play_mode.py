@@ -34,8 +34,9 @@ def init():
     ground = Ground()
     game_world.add_object(ground, 0)
 
-    cloud = Cloud()
-    game_world.add_object(cloud, 0)
+    for i in range(10):
+        cloud = Cloud()
+        game_world.add_object(cloud, 1)
 
     ball = Ball()
     game_world.add_object(ball, 1)

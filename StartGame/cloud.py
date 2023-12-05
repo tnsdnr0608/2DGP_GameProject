@@ -8,7 +8,7 @@ class Cloud:
     def __init__(self):
         self.x, self.y = random.randint(100, 750), random.randint(300, 600)
         self.frame = random.randint(1, 5)
-        self.speed = random.randint(1, 3)
+        self.speed = random.randint(1, 1)
         self.image = load_image('cloud.png')
         self.direction = 1
 
@@ -21,5 +21,4 @@ class Cloud:
             self.direction = 1
 
     def draw(self):
-        for i in range(20):
-            self.image.draw(self.x, self.y)
+        self.image.draw(self.x, self.y)
