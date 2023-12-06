@@ -1,0 +1,15 @@
+# 메인 파일 이름을 지정하세요.
+main_file = 'main.py' # fill here
+
+# 데이타 파일들을 지정하세요.
+data_files = [
+    'ball.png', 'cloud.png', 'jump.png', 'map.png', 'pado.png',
+    'bgm.mp3', 'idle.wav', 'score.png', 'slide.png', 'spike.png',
+    'title.png', 'tuk_credit.png', 'walk_sheet.png', 'spike.wav'
+]
+
+# 데이타가 들어있는 폴더들을 지정하세요.
+data_folders = [
+    # fill here
+]
+
