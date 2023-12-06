@@ -47,6 +47,9 @@ def handle_collisions():
                     b.handle_collision(group, a)
 
 
+
+
+
 # 월드를 업데이트하는, 객체들을 모두 업데이트하는 함수
 def update():
     for layer in objects:

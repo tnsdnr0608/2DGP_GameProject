@@ -13,11 +13,16 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 5
 
+# score
+filed = 120
+up_filed = 550
+left_filed = 50
+right_filed = 800
 
 class Ball:
     image = None
 
-    def __init__(self, x = 400, y = 600, velocity = 0.5):
+    def __init__(self, x = 600, y = 600, velocity = 1):
         if Ball.image == None:
             Ball.image = load_image('ball.png')
         self.x, self.y, self.velocity = x, y, velocity
@@ -40,15 +45,16 @@ class Ball:
         self.x += self.ball_dx * RUN_SPEED_PPS * game_framework.frame_time
         self.y += self.ball_dy * RUN_SPEED_PPS * game_framework.frame_time
 
-        if self.y <= 120:
-            self.y = 120
+        if self.y <= filed:
+            # self.y = filed
             self.ball_dy = 1
-        if self.y >= 550:
-            self.y = 550
+        if self.y >= up_filed:
+            # self.y = up_filed
             self.ball_dy = -1
-        if self.x <= 50:
-            self.x = 50
+        if self.x <= left_filed:
+            # self.x = left_filed
             self.ball_dx = 1
-        if self.x >= 800:
-            self.x = 800
+        if self.x >= right_filed:
+            # self.x = right_filed
             self.ball_dx = -1
+
